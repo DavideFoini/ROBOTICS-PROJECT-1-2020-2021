@@ -13,6 +13,7 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   std_msgs
   message_filters
+  dynamic_reconfigure
 )
 
 ## System dependencies are found with CMake's conventions
@@ -92,10 +93,9 @@ generate_messages(
 ##     and list every .cfg file to be processed
 
 ## Generate dynamic reconfigure parameters in the 'cfg' folder
-# generate_dynamic_reconfigure_options(
-#   cfg/DynReconf1.cfg
-#   cfg/DynReconf2.cfg
-# )
+generate_dynamic_reconfigure_options(
+   cfg/parameters.cfg
+ )
 
 ###################################
 ## catkin specific configuration ##
@@ -141,6 +141,7 @@ include_directories(include ${catkin_INCLUDE_DIRS})
 ## The recommended prefix ensures that target names across packages don't collide
 # add_executable(${PROJECT_NAME}_node src/chicago_node.cpp)
 add_executable(speeds_pub_sub src/speeds_pub_sub.cpp)
+add_executable(velocity_computation src/velocity_computation.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -157,6 +158,7 @@ add_executable(speeds_pub_sub src/speeds_pub_sub.cpp)
 #   ${catkin_LIBRARIES}
 # )
 target_link_libraries(speeds_pub_sub ${catkin_LIBRARIES})
+target_link_libraries(velocity_computation ${catkin_LIBRARIES})
 
 #############
 ## Install ##

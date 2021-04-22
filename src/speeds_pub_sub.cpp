@@ -37,6 +37,14 @@ class pub_sub
       chicago::motor_speeds speeds;
       speeds.header.stamp = ros::Time::now();
       speeds.header.frame_id = "";
+      /*if(fr->rpm != rr->rpm){
+        ROS_INFO("non uguali di %f", abs(fr->rpm-rr->rpm));
+        ros::Duration(1).sleep();
+      }
+      if(fl->rpm != rl-> rpm){
+        ROS_INFO("non uguali di %f", abs(fl->rpm-rl->rpm));
+        ros::Duration(1).sleep();
+      }*/
       speeds.rpm_fr=fr->rpm;
       speeds.rpm_fl=fl->rpm;
       speeds.rpm_rr=rr->rpm;
