@@ -8,6 +8,7 @@
 #include "std_msgs/Float64.h"
 #include <message_filters/sync_policies/exact_time.h>
 #include <message_filters/sync_policies/approximate_time.h>
+#include <math.h>
 
 class pub_sub
 {
@@ -30,16 +31,17 @@ class pub_sub
       float wheel_radius;
       n.getParam("/wheel_radius", wheel_radius);
       float real_baseline;
-      n.getParam("/wheel_radius", real_baseline);
+      n.getParam("/real_baseline", real_baseline);
+      ROS_INFO("%f %f %f", gear_rateo, wheel_radius, real_baseline);
       // linear velocities
-      float r_vel = (speeds->rpm_fr + speeds->rpm_rr) / (2*wheel_radius);
-      float l_vel = (speeds->rpm_fl + speeds->rpm_rl) / (2*wheel_radius);
+      float r_vel = ((speeds->rpm_fr + speeds->rpm_rr) * (M_PI / 30) * gear_rateo / 2) * wheel_radius;
+      float l_vel = ((speeds->rpm_fl + speeds->rpm_rl) * (M_PI / 30) * gear_rateo / 2) * wheel_radius;
       // angular velocity
       float w = (r_vel + l_vel)/real_baseline;
       // rotation radius
       float rotation_radius = (real_baseline/2)*((r_vel+l_vel)/(r_vel-l_vel));
 
-      float apparent_baseline = rotation_radius * (r_vel-l_vel)/(r_vel+l_vel);
+      float apparent_baseline = rotation_radius * ((r_vel-l_vel)/(r_vel+l_vel));
       ROS_INFO("%f", apparent_baseline);
       //pub.publish();
   }
