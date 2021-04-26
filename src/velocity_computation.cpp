@@ -16,6 +16,7 @@ class pub_sub
   ros::NodeHandle n;
   ros::Publisher pub;
   ros::Subscriber sub;
+  geometry_msgs::TwistStamped twist;
 
   public:
   pub_sub(){
@@ -30,20 +31,25 @@ class pub_sub
       n.getParam("/gear_rateo", gear_rateo);
       float wheel_radius;
       n.getParam("/wheel_radius", wheel_radius);
-      float real_baseline;
-      n.getParam("/real_baseline", real_baseline);
-      ROS_INFO("%f %f %f", gear_rateo, wheel_radius, real_baseline);
+      float apparent_baseline;
+      n.getParam("/apparent_baseline", apparent_baseline);
       // linear velocities
-      float r_vel = ((speeds->rpm_fr + speeds->rpm_rr) * (M_PI / 30) * gear_rateo / 2) * wheel_radius;
-      float l_vel = ((speeds->rpm_fl + speeds->rpm_rl) * (M_PI / 30) * gear_rateo / 2) * wheel_radius;
+      float v_r = (((speeds->rpm_fr + speeds->rpm_rr) * gear_rateo) / 2) * (M_PI / 30) * wheel_radius;
+      float v_l = (((speeds->rpm_fl + speeds->rpm_rl) * gear_rateo) / 2) * (M_PI / 30) * wheel_radius;
+      float v_x = (v_r + v_l) / 2;
       // angular velocity
-      float w = (r_vel + l_vel)/real_baseline;
-      // rotation radius
-      float rotation_radius = (real_baseline/2)*((r_vel+l_vel)/(r_vel-l_vel));
+      float w = (v_r - v_l)/apparent_baseline;
+      // generating twist message
+      twist.header.stamp = ros::Time::now();
+      twist.header.frame_id = "scout";
+      twist.twist.linear.x = v_x;
+      twist.twist.linear.y = 0.0;
+      twist.twist.linear.z = 0.0;
+      twist.twist.angular.x = 0.0;
+      twist.twist.angular.y = 0.0;
+      twist.twist.angular.z = w;
 
-      float apparent_baseline = rotation_radius * ((r_vel-l_vel)/(r_vel+l_vel));
-      ROS_INFO("%f", apparent_baseline);
-      //pub.publish();
+      pub.publish(twist);
   }
 };
 

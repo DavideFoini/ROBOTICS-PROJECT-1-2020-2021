@@ -13,7 +13,11 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   std_msgs
   message_filters
+  message_generation
   dynamic_reconfigure
+  tf
+  tf2
+  tf2_ros
 )
 
 ## System dependencies are found with CMake's conventions
@@ -54,6 +58,7 @@ add_message_files(
    FILES
    motor_speeds.msg
    MotorSpeed.msg
+   odom.msg
  )
 
 ## Generate services in the 'srv' folder
@@ -142,6 +147,9 @@ include_directories(include ${catkin_INCLUDE_DIRS})
 # add_executable(${PROJECT_NAME}_node src/chicago_node.cpp)
 add_executable(speeds_pub_sub src/speeds_pub_sub.cpp)
 add_executable(velocity_computation src/velocity_computation.cpp)
+add_executable(apparent_baseline src/apparent_baseline.cpp)
+add_executable(speeds_pub_sub_pol src/speeds_pub_sub_pol.cpp)
+add_executable(odometry_computation src/odometry_computation.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -151,7 +159,11 @@ add_executable(velocity_computation src/velocity_computation.cpp)
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
-# add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(speeds_pub_sub chicago_generate_messages_cpp)
+add_dependencies(velocity_computation chicago_generate_messages_cpp)
+add_dependencies(apparent_baseline chicago_generate_messages_cpp)
+add_dependencies(speeds_pub_sub_pol chicago_generate_messages_cpp)
+add_dependencies(odometry_computation chicago_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
 # target_link_libraries(${PROJECT_NAME}_node
@@ -159,6 +171,10 @@ add_executable(velocity_computation src/velocity_computation.cpp)
 # )
 target_link_libraries(speeds_pub_sub ${catkin_LIBRARIES})
 target_link_libraries(velocity_computation ${catkin_LIBRARIES})
+target_link_libraries(apparent_baseline ${catkin_LIBRARIES})
+target_link_libraries(speeds_pub_sub_pol ${catkin_LIBRARIES})
+target_link_libraries(odometry_computation ${catkin_LIBRARIES})
+
 
 #############
 ## Install ##

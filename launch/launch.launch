@@ -1,7 +1,12 @@
 <launch>
 <param name="gear_rateo" value="0.027" />
 <param name="wheel_radius" value="0.1575" />
-<param name="real_baseline" value="0.583" />
+<param name="apparent_baseline" value="0.97" />
+<rosparam name="position">
+	x: 0;
+	y: 0;
+	th: 0;
+</rosparam>
 <node pkg="chicago" name="velocity_computation" type="velocity_computation" output="screen" />
 <node pkg="chicago" name="speeds_pub_sub" type="speeds_pub_sub" output="screen" />
 </launch>

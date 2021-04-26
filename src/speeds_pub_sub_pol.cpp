@@ -22,8 +22,11 @@ class pub_sub
     message_filters::Subscriber<chicago::MotorSpeed> rr(n, "/motor_speed_rr", 1);
     message_filters::Subscriber<chicago::MotorSpeed> rl(n, "/motor_speed_rl", 1);
 
-    message_filters::TimeSynchronizer<chicago::MotorSpeed, chicago::MotorSpeed,
-                                      chicago::MotorSpeed, chicago::MotorSpeed> sync(fr, fl, rr, rl, 10);
+    // policy
+    typedef message_filters::sync_policies
+    ::ApproximateTime<chicago::MotorSpeed, chicago::MotorSpeed, chicago::MotorSpeed,chicago::MotorSpeed> MySyncPolicy;
+
+    message_filters::Synchronizer<MySyncPolicy> sync(MySyncPolicy(10), fr, fl, rr, rl);
 
     sync.registerCallback(boost::bind(&pub_sub::callback, this, _1, _2, _3, _4));
     ros::spin();
