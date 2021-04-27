@@ -58,7 +58,7 @@ add_message_files(
    FILES
    motor_speeds.msg
    MotorSpeed.msg
-   odom.msg
+   custom_odom.msg
  )
 
 ## Generate services in the 'srv' folder

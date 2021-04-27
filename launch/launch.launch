@@ -2,11 +2,11 @@
 <param name="gear_rateo" value="0.027" />
 <param name="wheel_radius" value="0.1575" />
 <param name="apparent_baseline" value="0.97" />
-<rosparam name="position">
-	x: 0;
-	y: 0;
-	th: 0;
-</rosparam>
+<param name="x" value="0" />
+<param name="y" value="0" />
+<param name="z" value="0" />
+<param name="method" value="0" />
 <node pkg="chicago" name="velocity_computation" type="velocity_computation" output="screen" />
 <node pkg="chicago" name="speeds_pub_sub" type="speeds_pub_sub" output="screen" />
+<node pkg="chicago" name="odometry_computation" type="odometry_computation" output="screen" />
 </launch>
