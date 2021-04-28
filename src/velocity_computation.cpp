@@ -34,14 +34,14 @@ class pub_sub
       float apparent_baseline;
       n.getParam("/apparent_baseline", apparent_baseline);
       // linear velocities
-      float v_r = (((speeds->rpm_fr + speeds->rpm_rr) * gear_rateo) / 2) * (M_PI / 30) * wheel_radius;
-      float v_l = (((speeds->rpm_fl + speeds->rpm_rl) * gear_rateo) / 2) * (M_PI / 30) * wheel_radius;
+      float v_r = (((speeds->rpm_fr + speeds->rpm_rr) / 2) * gear_rateo) * (M_PI / 30) * wheel_radius;
+      float v_l = (((speeds->rpm_fl + speeds->rpm_rl) / 2) * gear_rateo) * (M_PI / 30) * wheel_radius;
       float v_x = (v_r + v_l) / 2;
-      // angular velocity
+      // angular velocity of the robot
       float w = (v_r - v_l)/apparent_baseline;
       // generating twist message
-      twist.header.stamp = ros::Time::now();
-      twist.header.frame_id = "scout";
+      twist.header.stamp = speeds->header.stamp;
+      twist.header.frame_id = "base_link";
       twist.twist.linear.x = v_x;
       twist.twist.linear.y = 0.0;
       twist.twist.linear.z = 0.0;

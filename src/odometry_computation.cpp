@@ -33,7 +33,7 @@ class pub_sub
     pub_custom = n.advertise<chicago::custom_odom>("/custom_odometry", 1000);
     pub_odom = n.advertise<nav_msgs::Odometry>("/odometry", 1000);
     sub = n.subscribe("/twist", 1000, &pub_sub::callback, this);
-    last_time = ros::Time::now();
+    last_time;
     first = true;
     ros::spin();
   }
@@ -47,7 +47,7 @@ class pub_sub
       n.getParam("/y", y);
       n.getParam("/th", th);
       n.getParam("/method", method);
-      odom.header.stamp = ros::Time::now();
+      odom.header.stamp = twist->header.stamp;
       odom.header.frame_id = "odom";
       odom.child_frame_id = "base_link";
 
@@ -68,7 +68,9 @@ class pub_sub
       }
 
       if(method == 1){
-        // TO DO runge kutta
+        x = x + (twist->twist.linear.x * dt * cos(th + ((twist->twist.angular.z * dt) / 2)));
+        y = y + (twist->twist.linear.x * dt * sin(th + ((twist->twist.angular.z * dt) / 2)));
+        th = th + (twist->twist.angular.z * dt);
       }
 
       // updating parameters
@@ -102,9 +104,9 @@ class pub_sub
       pub_odom.publish(odom);
 
       // set TF
-      transformStamped.header.stamp = ros::Time::now();
+      transformStamped.header.stamp = twist->header.stamp;
       transformStamped.header.frame_id = "world";
-      transformStamped.child_frame_id = "odom";
+      transformStamped.child_frame_id = "base_link";
       transformStamped.transform.translation.x = x;
       transformStamped.transform.translation.y = y;
       transformStamped.transform.translation.z = 0.0;

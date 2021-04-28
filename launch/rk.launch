@@ -4,8 +4,8 @@
 <param name="apparent_baseline" value="0.97" />
 <param name="x" value="0" />
 <param name="y" value="0" />
-<param name="z" value="0" />
-<param name="method" value="0" />
+<param name="th" value="0" />
+<param name="method" value="1" />
 <node pkg="chicago" name="velocity_computation" type="velocity_computation" output="screen" />
 <node pkg="chicago" name="speeds_pub_sub" type="speeds_pub_sub" output="screen" />
 <node pkg="chicago" name="odometry_computation" type="odometry_computation" output="screen" />
