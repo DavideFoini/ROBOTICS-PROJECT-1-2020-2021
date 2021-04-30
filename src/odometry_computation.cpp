@@ -15,7 +15,6 @@
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 
 
-
 class pub_sub
 {
 private:
@@ -64,30 +63,23 @@ public:
     void callback(const geometry_msgs::TwistStamped::ConstPtr& twist){
         int method;
         std_msgs::String str_method;
-// get parameters
+        // get parameters
         n.getParam("/x", x);
         n.getParam("/y", y);
         n.getParam("/th", th);
         n.getParam("/method", method);
+
         odom.header.stamp = twist->header.stamp;
         odom.header.frame_id = "odom";
         odom.child_frame_id = "base_link";
 
-
-
         if(!first)
             dt = (twist->header.stamp - last_time).toSec();
-
-
 
         if(first)
             first = false;
 
-
-
         last_time = twist->header.stamp;
-
-
 
 //Compute the odometry with Euler or RK methods
 //Method is defined through a class variable enum, odometryType
@@ -97,14 +89,10 @@ public:
             computeRk(twist);
 
 
-
-
-
 // updating parameters
         n.setParam("/x", x);
         n.setParam("/y", y);
         n.setParam("/th", th);
-
 
 
 // set pose
@@ -116,17 +104,8 @@ public:
         geometry_msgs::Quaternion quat_msg = tf2::toMsg(odom_quat);
         odom.pose.pose.orientation = quat_msg;
 
-
-
 // set twist
         odom.twist.twist = twist->twist;
-
-
-
-
-//Do we need the code below ?
-
-
 
 
         if(method == 0)
@@ -134,18 +113,13 @@ public:
         else
             str_method.data = "rk";
 
-
-
         custom_odom.odom = odom;
         custom_odom.method = str_method;
-
 
 
 // publish messages
         pub_custom.publish(custom_odom);
         pub_odom.publish(odom);
-
-
 
 // set TF
         transformStamped.header.stamp = twist->header.stamp;
@@ -158,8 +132,6 @@ public:
         transformStamped.transform.rotation.y = odom_quat.y();
         transformStamped.transform.rotation.z = odom_quat.z();
         transformStamped.transform.rotation.w = odom_quat.w();
-
-
 
 // send TF
         br.sendTransform(transformStamped);

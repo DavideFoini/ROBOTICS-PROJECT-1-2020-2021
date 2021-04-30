@@ -8,6 +8,23 @@
 #include <message_filters/sync_policies/exact_time.h>
 #include <message_filters/sync_policies/approximate_time.h>
 
+
+//TODO: Is this data structure enough ?
+typedef struct motor_speeds_input_data
+{
+    double speed_fr;
+    double speed_fl;
+    double speed_rr;
+    double speed_rl;
+
+    double time_fr;
+    double time_fl;
+    double time_rr;
+    double time_rl;
+
+} InputMotorSpeeds;
+
+
 class pub_sub
 {
   private:
@@ -34,7 +51,11 @@ class pub_sub
 
   void callback(const chicago::MotorSpeed::ConstPtr& fr, const chicago::MotorSpeed::ConstPtr& fl, 
                 const chicago::MotorSpeed::ConstPtr& rr, const chicago::MotorSpeed::ConstPtr& rl) {
+
+      InputMotorSpeeds inputMotorSpeeds;
+
       chicago::motor_speeds speeds;
+
       speeds.header.stamp = ros::Time::now();
       speeds.header.frame_id = "";
       /*if(fr->rpm != rr->rpm){
@@ -49,7 +70,23 @@ class pub_sub
       speeds.rpm_fl=fl->rpm;
       speeds.rpm_rr=rr->rpm;
       speeds.rpm_rl=rl->rpm;
-      pub.publish(speeds);
+
+      //TODO: verify that it actually takes the timestamps
+
+      //Get the input data from the bag
+      inputMotorSpeeds.speed_fr = fr->rpm;
+      inputMotorSpeeds.speed_fl = fl->rpm;
+      inputMotorSpeeds.speed_rr = rr->rpm;
+      inputMotorSpeeds.speed_rl = rl->rpm;
+
+      //Set the timestamp
+      inputMotorSpeeds.time_fr = fr->header.stamp.toSec();
+      inputMotorSpeeds.time_fl = fl->header.stamp.toSec();
+      inputMotorSpeeds.time_rr = rr->header.stamp.toSec();
+      inputMotorSpeeds.time_rl = rl->header.stamp.toSec();
+
+      //Publish our own data structure with timestamps
+      pub.publish(inputMotorSpeeds);
   }
 };
 
