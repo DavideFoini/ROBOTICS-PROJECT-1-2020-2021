@@ -14,6 +14,12 @@
 #include <geometry_msgs/TransformStamped.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 
+
+enum OdometryType{
+    EULER,
+    RK
+};
+
 class pub_sub
 {
   private:
@@ -27,6 +33,7 @@ class pub_sub
   bool first;
   tf2_ros::TransformBroadcaster br;
   geometry_msgs::TransformStamped transformStamped;
+  OdometryType odometryType;
 
   public:
   pub_sub(){
@@ -36,6 +43,33 @@ class pub_sub
     last_time;
     first = true;
     ros::spin();
+    //Select the type of computation for the odometry
+    odometryType = EULER;
+  }
+
+
+
+
+  void computeOdometry(){
+      if(odometryType == EULER){
+          computeEuler();
+      }
+      if(odometryType == RK){
+          computeRk();
+      }
+
+  }
+
+  void computeEuler(){
+      x = x + (twist->twist.linear.x * dt * cos(th));
+      y = y + (twist->twist.linear.x * dt * sin(th));
+      th = th + (twist->twist.angular.z * dt);
+  }
+
+  void computeRk(){
+      x = x + (twist->twist.linear.x * dt * cos(th + ((twist->twist.angular.z * dt) / 2)));
+      y = y + (twist->twist.linear.x * dt * sin(th + ((twist->twist.angular.z * dt) / 2)));
+      th = th + (twist->twist.angular.z * dt);
   }
 
   void callback(const geometry_msgs::TwistStamped::ConstPtr& twist){
@@ -59,19 +93,10 @@ class pub_sub
 
       last_time = twist->header.stamp;
 
-      // compute new pose
-      // if method 0 use euler
-      if(method == 0){
-        x = x + (twist->twist.linear.x * dt * cos(th));
-        y = y + (twist->twist.linear.x * dt * sin(th));
-        th = th + (twist->twist.angular.z * dt);
-      }
+      //Compute the odometry with Euler or RK methods
+      //Method is defined through a class variable enum, odometryType
+      computeOdometry();
 
-      if(method == 1){
-        x = x + (twist->twist.linear.x * dt * cos(th + ((twist->twist.angular.z * dt) / 2)));
-        y = y + (twist->twist.linear.x * dt * sin(th + ((twist->twist.angular.z * dt) / 2)));
-        th = th + (twist->twist.angular.z * dt);
-      }
 
       // updating parameters
       n.setParam("/x", x);
@@ -90,11 +115,15 @@ class pub_sub
       // set twist
       odom.twist.twist = twist->twist;
 
-      //set method
+
+      //Do we need the code below ?
+
+      /*
       if(method == 0)
         str_method.data = "euler";
       else
         str_method.data = "rk";
+        */
 
       custom_odom.odom = odom;
       custom_odom.method = str_method;
