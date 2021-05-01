@@ -35,7 +35,7 @@ class pub_sub
       n.getParam("/apparent_baseline", apparent_baseline);
       // linear velocities
       float v_r = (((speeds->rpm_fr + speeds->rpm_rr) / 2) * gear_rateo) * (M_PI / 30) * wheel_radius;
-      float v_l = (((speeds->rpm_fl + speeds->rpm_rl) / 2) * gear_rateo) * (M_PI / 30) * wheel_radius;
+      float v_l = (((speeds->rpm_fl + speeds->rpm_rl) / 2) * (-1) * gear_rateo) * (M_PI / 30) * wheel_radius;
       float v_x = (v_r + v_l) / 2;
       // angular velocity of the robot
       float w = (v_r - v_l)/apparent_baseline;
@@ -49,6 +49,7 @@ class pub_sub
       twist.twist.angular.y = 0.0;
       twist.twist.angular.z = w;
 
+      
       pub.publish(twist);
   }
 };
