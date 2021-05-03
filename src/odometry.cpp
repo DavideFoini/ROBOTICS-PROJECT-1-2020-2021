@@ -9,6 +9,8 @@
 #include <geometry_msgs/TwistStamped.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 #include <math.h>
+#include <dynamic_reconfigure/server.h>
+#include <chicago/parametersConfig.h>
 
 class pub_sub
 {
@@ -17,6 +19,7 @@ class pub_sub
     // publishers
     ros::Publisher twist_pub;
     ros::Publisher custom_pub;
+    ros::Publisher odom_pub;
     // parameters
     float gear_rateo, wheel_radius, apparent_baseline;
     int method;
@@ -38,12 +41,15 @@ class pub_sub
     //others
     tf2::Quaternion odom_quat;
     std_msgs::String str_method;
+    dynamic_reconfigure::Server<chicago::parametersConfig> server;
+    dynamic_reconfigure::Server<chicago::parametersConfig>::CallbackType f;
 
   public:
     pub_sub(){
       // set publishers
       custom_pub = n.advertise<chicago::custom_odom>("/custom_odom", 1000);
       twist_pub = n.advertise<geometry_msgs::TwistStamped>("/twist", 1000);
+      odom_pub = n.advertise<nav_msgs::Odometry>("/odometry", 1000);
       // message filters
       message_filters::Subscriber<chicago::MotorSpeed> fr(n, "/motor_speed_fr", 10);
       message_filters::Subscriber<chicago::MotorSpeed> fl(n, "/motor_speed_fl", 10);
@@ -71,6 +77,9 @@ class pub_sub
       dy = 0;
       dth = 0;
       dt = 0;
+
+      f = boost::bind(&pub_sub::param_callback, this, _1, _2);
+      server.setCallback(f);
 
       ros::spin();
     }
@@ -119,6 +128,7 @@ class pub_sub
 
     // compute odometry from velocities
     void comp_odom(){
+
       dt = (current_time - last_time).toSec();
       dth = w * dt;
       // compute deltas based on the set integration method
@@ -154,7 +164,7 @@ class pub_sub
     void comp_custom_message(){
       // build message
       odom.header.stamp = current_time;
-      odom.header.frame_id = "world";
+      odom.header.frame_id = "odom";
       odom.child_frame_id = "base_link";
       odom.pose.pose.position.x = x;
       odom.pose.pose.position.y = y;
@@ -171,8 +181,9 @@ class pub_sub
         ROS_ERROR("fatal error: integration method not set");
       custom_odom.odom = odom;
       custom_odom.method = str_method;
-      //publish message
+      //publish messages
       custom_pub.publish(custom_odom);
+      odom_pub.publish(odom);
     }
 
     // build and publish TF message
@@ -188,12 +199,19 @@ class pub_sub
       // publish TF message
       br.sendTransform(transformStamped);
     }
+
+    void param_callback(chicago::parametersConfig &config, uint32_t level) {
+      method = config.method;
+    }
 };
+
 
 int main(int argc, char **argv)
 {
   ros::init(argc, argv, "odometry");
+
   pub_sub my_pub_sub;
+
   ros::spin();
   return 0;
 }

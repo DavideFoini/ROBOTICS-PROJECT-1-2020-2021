@@ -9,4 +9,6 @@
 <node pkg="chicago" name="velocity_computation" type="velocity_computation" output="screen" />
 <node pkg="chicago" name="speeds_pub_sub" type="speeds_pub_sub" output="screen" />
 <node pkg="chicago" name="odometry_computation" type="odometry_computation" output="screen" />
+<node pkg="tf_scout" name="tf2_publisher_odom" type="tf2_scout_odom" output="screen" />
+<node pkg="rosbag" type="play" name="bag1" output="screen" args="--clock --quiet /home/davide/robotics/src/chicago/bags/bag1.bag"/>
 </launch>

@@ -148,7 +148,7 @@ include_directories(include ${catkin_INCLUDE_DIRS})
 add_executable(speeds_pub_sub src/speeds_pub_sub.cpp)
 add_executable(velocity_computation src/velocity_computation.cpp)
 add_executable(apparent_baseline src/apparent_baseline.cpp)
-add_executable(speeds_pub_sub_pol src/speeds_pub_sub_pol.cpp)
+#add_executable(speeds_pub_sub_pol src/speeds_pub_sub_pol.cpp)
 add_executable(odometry src/odometry.cpp)
 add_executable(odometry_computation src/odometry_computation.cpp)
 
@@ -163,9 +163,11 @@ add_executable(odometry_computation src/odometry_computation.cpp)
 add_dependencies(speeds_pub_sub chicago_generate_messages_cpp)
 add_dependencies(velocity_computation chicago_generate_messages_cpp)
 add_dependencies(apparent_baseline chicago_generate_messages_cpp)
-add_dependencies(speeds_pub_sub_pol chicago_generate_messages_cpp)
+#add_dependencies(speeds_pub_sub_pol chicago_generate_messages_cpp)
 add_dependencies(odometry chicago_generate_messages_cpp)
 add_dependencies(odometry_computation chicago_generate_messages_cpp)
+add_dependencies(odometry ${PROJECT_NAME}_gencfg)
+
 
 ## Specify libraries to link a library or executable target against
 # target_link_libraries(${PROJECT_NAME}_node
@@ -174,7 +176,7 @@ add_dependencies(odometry_computation chicago_generate_messages_cpp)
 target_link_libraries(speeds_pub_sub ${catkin_LIBRARIES})
 target_link_libraries(velocity_computation ${catkin_LIBRARIES})
 target_link_libraries(apparent_baseline ${catkin_LIBRARIES})
-target_link_libraries(speeds_pub_sub_pol ${catkin_LIBRARIES})
+#target_link_libraries(speeds_pub_sub_pol ${catkin_LIBRARIES})
 target_link_libraries(odometry ${catkin_LIBRARIES})
 target_link_libraries(odometry_computation ${catkin_LIBRARIES})
 
