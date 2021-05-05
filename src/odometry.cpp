@@ -11,6 +11,10 @@
 #include <math.h>
 #include <dynamic_reconfigure/server.h>
 #include <chicago/parametersConfig.h>
+#include "chicago/reset_odometry.h"
+#include "chicago/set_odometry.h"
+#include <dynamic_reconfigure/Reconfigure.h>
+#include <dynamic_reconfigure/Config.h>
 
 class pub_sub
 {
@@ -41,8 +45,12 @@ class pub_sub
     //others
     tf2::Quaternion odom_quat;
     std_msgs::String str_method;
-    dynamic_reconfigure::Server<chicago::parametersConfig> server;
     dynamic_reconfigure::Server<chicago::parametersConfig>::CallbackType f;
+    // servers
+    dynamic_reconfigure::Server<chicago::parametersConfig> server;
+    ros::ServiceServer reset_service;
+    ros::ServiceServer set_service;
+    
 
   public:
     pub_sub(){
@@ -80,6 +88,9 @@ class pub_sub
 
       f = boost::bind(&pub_sub::param_callback, this, _1, _2);
       server.setCallback(f);
+
+      reset_service = n.advertiseService("reset_odometry", &pub_sub::reset, this);
+      set_service = n.advertiseService("set_odometry", &pub_sub::set, this);
 
       ros::spin();
     }
@@ -203,6 +214,20 @@ class pub_sub
     void param_callback(chicago::parametersConfig &config, uint32_t level) {
       method = config.method;
     }
+
+    bool reset(chicago::reset_odometry::Request &req,chicago::reset_odometry::Response &res){
+      x = 0;
+      y = 0;
+      return true;
+    }
+
+    bool set(chicago::set_odometry::Request &req,chicago::set_odometry::Response &res){
+      x = req.x;
+      y = req.y;
+      theta = req.th;
+      return true;
+    }
+
 };
 
 

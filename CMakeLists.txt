@@ -56,17 +56,16 @@ find_package(catkin REQUIRED COMPONENTS
 ## Generate messages in the 'msg' folder
 add_message_files(
    FILES
-   motor_speeds.msg
    MotorSpeed.msg
    custom_odom.msg
  )
 
 ## Generate services in the 'srv' folder
-# add_service_files(
-#   FILES
-#   Service1.srv
-#   Service2.srv
-# )
+add_service_files(
+   FILES
+   reset_odometry.srv
+   set_odometry.srv
+)
 
 ## Generate actions in the 'action' folder
 # add_action_files(
@@ -125,10 +124,6 @@ catkin_package( CATKIN_DEPENDS message_runtime message_filters geometry_msgs nav
 
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
-include_directories(
-# include
-  ${catkin_INCLUDE_DIRS}
-)
 include_directories(include ${catkin_INCLUDE_DIRS})
 
 ## Declare a C++ library
@@ -145,12 +140,8 @@ include_directories(include ${catkin_INCLUDE_DIRS})
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
 # add_executable(${PROJECT_NAME}_node src/chicago_node.cpp)
-add_executable(speeds_pub_sub src/speeds_pub_sub.cpp)
-add_executable(velocity_computation src/velocity_computation.cpp)
-add_executable(apparent_baseline src/apparent_baseline.cpp)
-#add_executable(speeds_pub_sub_pol src/speeds_pub_sub_pol.cpp)
 add_executable(odometry src/odometry.cpp)
-add_executable(odometry_computation src/odometry_computation.cpp)
+add_executable(apparent_baseline src/apparent_baseline.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -160,12 +151,6 @@ add_executable(odometry_computation src/odometry_computation.cpp)
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
-add_dependencies(speeds_pub_sub chicago_generate_messages_cpp)
-add_dependencies(velocity_computation chicago_generate_messages_cpp)
-add_dependencies(apparent_baseline chicago_generate_messages_cpp)
-#add_dependencies(speeds_pub_sub_pol chicago_generate_messages_cpp)
-add_dependencies(odometry chicago_generate_messages_cpp)
-add_dependencies(odometry_computation chicago_generate_messages_cpp)
 add_dependencies(odometry ${PROJECT_NAME}_gencfg)
 
 
@@ -173,13 +158,10 @@ add_dependencies(odometry ${PROJECT_NAME}_gencfg)
 # target_link_libraries(${PROJECT_NAME}_node
 #   ${catkin_LIBRARIES}
 # )
-target_link_libraries(speeds_pub_sub ${catkin_LIBRARIES})
-target_link_libraries(velocity_computation ${catkin_LIBRARIES})
-target_link_libraries(apparent_baseline ${catkin_LIBRARIES})
-#target_link_libraries(speeds_pub_sub_pol ${catkin_LIBRARIES})
 target_link_libraries(odometry ${catkin_LIBRARIES})
-target_link_libraries(odometry_computation ${catkin_LIBRARIES})
+target_link_libraries(apparent_baseline ${catkin_LIBRARIES})
 
+add_dependencies(odometry ${catkin_EXPORTED_TARGETS})
 
 #############
 ## Install ##

@@ -14,17 +14,15 @@ void callback(const chicago::MotorSpeed::ConstPtr& fr, const chicago::MotorSpeed
   //constants
   float gear_rateo = 0.027027027;
   float wheel_radius = 0.1575;
-  //ROS_INFO("rpm r: %f, rpm f: %f, gear_rateo: %f, wheel_radius. %f", fr->rpm, fl->rpm, gear_rateo, wheel_radius);
   // get linear velocities of the wheels
   float Vr = (fr->rpm) * gear_rateo * (M_PI/30) * wheel_radius;
-  float Vl = (fl->rpm) * gear_rateo * (M_PI/30) * wheel_radius;
+  float Vl = (fl->rpm) * gear_rateo * (-1) * (M_PI/30) * wheel_radius;
   // get angular velocity of the robot
   float Wz = odom->twist.twist.angular.z;
   // get apparent baseline
   float apparent_baseline = (Vr-Vl)/Wz;
-  //ROS_INFO("apparent baseline: %f, Vr: %f, Vl: %f, Wz: %f", apparent_baseline, Vr, Vl, Wz);
-  //ros::Duration(0.5).sleep();
-  if(abs(apparent_baseline) < 2){
+
+  if(!isnan(apparent_baseline) && !isinf(apparent_baseline)){
     apparent_baseline_final = (apparent_baseline_final + abs(apparent_baseline))/2;
     ROS_INFO("%f", apparent_baseline_final);
   }
